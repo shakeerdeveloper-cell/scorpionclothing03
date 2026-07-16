@@ -712,9 +712,12 @@
                     // Calculate the dynamic decimal to display as the "Platform Fee"
                     let platformFee = (currentCheckoutAmount - baseTotal).toFixed(2); 
                     
-                    // --- THE ANTI-BLOCK UPI LINK ---
-                    const upiID = "BHARATPE2N0B0T7E1C37718@unitype"; // Your BharatPe Merchant ID
-                    const upiLink = `upi://pay?pa=${upiID}&pn=Scorpion%20Store&mc=5499&tr=ORDER_${Date.now()}&am=${currentCheckoutAmount}&cu=INR`;
+                                        // --- THE ANTI-BLOCK UPI LINK (BROWSER-SAFE FORMAT) ---
+                    const upiID = "BHARATPE2N0B0T7E1C37718@unitype"; 
+                    const secureTxnId = "TXN" + Date.now(); // Must be unique and alphanumeric
+                    
+                    // Added tid, tn, and strict URL encoding (+) to bypass browser security filters
+                    const upiLink = `upi://pay?pa=${upiID}&pn=Scorpion+Store&mc=5499&tid=${secureTxnId}&tr=${secureTxnId}&tn=Checkout+Order&am=${currentCheckoutAmount}&cu=INR`;
                     
                     // 2. Update UI: Remove QR, Show Platform Fee, Add clickable button
                     const upiSection = document.getElementById('upi-section');
