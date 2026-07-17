@@ -5,19 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scorpion | Premium Men's Clothing</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- RAZORPAY SDK -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
     <style>
         :root { --bg-dark: #121212; --bg-card: #1e1e1e; --brand-orange: #f39c12; --text-light: #ffffff; --text-muted: #a0a0a0; --border-color: #333333; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg-dark); color: var(--text-light); overflow-x: hidden; }
 
-        /* Animation Overlay */
         #animation-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.6s ease-out; }
         #intro-video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* General UI Layout */
         #main-content { display: none; opacity: 0; transition: opacity 0.8s ease-in; padding-bottom: 70px; }
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--bg-dark); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); }
         .menu-btn { font-size: 24px; cursor: pointer; }
@@ -26,7 +21,6 @@
         .cart-icon { position: relative; cursor: pointer; }
         .cart-badge { position: absolute; top: -8px; right: -10px; background-color: var(--brand-orange); color: #000; font-size: 12px; font-weight: bold; border-radius: 50%; padding: 2px 6px; }
 
-        /* Sidebar Overlay */
         #sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s; }
         #sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background-color: var(--bg-card); z-index: 1000; transition: left 0.3s ease; overflow-y: auto; border-right: 1px solid var(--border-color); }
         #sidebar.open { left: 0; }
@@ -39,22 +33,18 @@
         .sidebar-menu li { padding: 15px 20px; cursor: pointer; font-size: 14px; font-weight: bold; color: var(--text-muted); border-left: 3px solid transparent; }
         .sidebar-menu li:hover { color: var(--brand-orange); border-left: 3px solid var(--brand-orange); background-color: rgba(255, 255, 255, 0.05); }
 
-        /* Gateway Compliance Menu Sections */
         .sidebar-divider { border-top: 1px solid var(--border-color); margin: 10px 20px; }
         .sidebar-menu-sub li { padding: 10px 20px; font-size: 12px; color: #888; font-weight: normal; }
         .sidebar-menu-sub li:hover { color: var(--text-light); }
 
-        /* Legal Policy Page Styling */
         .policy-container { background: var(--bg-card); border: 1px solid var(--border-color); padding: 25px; border-radius: 8px; line-height: 1.6; font-size: 14px; color: #ddd; margin-bottom: 30px;}
         .policy-container h3 { color: var(--brand-orange); margin-top: 0; }
         .policy-container h4 { color: #fff; margin-top: 20px; margin-bottom: 5px; }
 
-        /* View Switching System */
         .view-section { display: none; animation: fadeIn 0.4s ease-in-out; }
         .view-section.active-view { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Grids & Cards */
         .banner { position: relative; width: 100%; height: 300px; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; text-align: center; }
         .banner::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); }
         .banner-content { position: relative; z-index: 1; padding: 20px; }
@@ -67,7 +57,6 @@
         .item-card h3 { font-size: 14px; margin: 10px 0 5px 0; text-transform: uppercase; }
         .item-card p.price { margin: 0; color: var(--brand-orange); font-weight: bold; font-size: 14px;}
         
-        /* Product Full Screen Detail View */
         .product-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; height: 60vh; background: #000; scrollbar-width: none; }
         .product-slider::-webkit-scrollbar { display: none; }
         .product-slider img { width: 100%; height: 100%; object-fit: cover; flex: 0 0 100%; scroll-snap-align: start; }
@@ -76,19 +65,16 @@
         .product-price { font-size: 22px; color: var(--brand-orange); font-weight: bold; margin: 0 0 20px 0; }
         .product-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px; }
         
-        /* Size Selector */
         .size-label { font-size: 14px; font-weight: bold; margin-bottom: 10px; display: block; text-transform: uppercase; }
         .sizes-container { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
         .size-btn { padding: 12px 18px; border: 1px solid var(--border-color); background: var(--bg-card); color: #fff; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 14px; transition: 0.2s;}
         .size-btn.active { border-color: var(--brand-orange); background: var(--brand-orange); color: #000; }
         
-        /* Bottom Action Bar */
         .bottom-action-bar { position: fixed; bottom: 0; left: 0; width: 100%; display: none; z-index: 1000; border-top: 1px solid var(--border-color); }
         .action-btn { flex: 1; padding: 20px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; border: none; }
         .btn-add-cart { background-color: var(--bg-card); color: #fff; }
         .btn-buy-now { background-color: var(--brand-orange); color: #000; }
 
-        /* Cart & Bill Styles */
         .cart-item { display: flex; gap: 15px; background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border-color); position: relative;}
         .cart-item img { width: 80px; height: 100px; object-fit: cover; border-radius: 4px; }
         .cart-details { flex: 1; }
@@ -97,20 +83,17 @@
         .cart-details .cart-price { color: var(--brand-orange); font-weight: bold; font-size: 16px; margin-top: 5px; }
         .remove-btn { color: #ff6b6b; cursor: pointer; font-size: 12px; text-transform: uppercase; font-weight: bold; position: absolute; right: 15px; top: 15px;}
         
-        /* Quantity Controls */
         .qty-controls { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
         .qty-btn { background-color: transparent; color: var(--text-light); border: 1px solid var(--border-color); width: 28px; height: 28px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; font-size: 16px;}
         .qty-btn:hover { border-color: var(--brand-orange); color: var(--brand-orange); }
         .qty-value { font-size: 14px; font-weight: bold; }
 
-        /* Order Summary Bill */
         .bill-summary { background: var(--bg-card); padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid var(--border-color); }
         .bill-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
         .bill-total { border-top: 1px solid var(--border-color); padding-top: 15px; font-size: 18px; font-weight: bold; color: var(--brand-orange); margin-bottom: 0;}
         .checkout-btn { width: 100%; padding: 15px; background: var(--brand-orange); color: #000; border: none; font-weight: bold; font-size: 16px; border-radius: 4px; cursor: pointer; margin-top: 20px; text-transform: uppercase;}
         .checkout-btn:disabled { background: #555; color: #888; cursor: not-allowed; }
 
-        /* Multi-Step Checkout Form */
         .checkout-step { display: none; background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px; }
         .checkout-step.active { display: block; animation: fadeIn 0.4s; }
         .checkout-step label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: bold; color: var(--text-muted); }
@@ -118,7 +101,6 @@
         .checkout-step input:focus, .checkout-step select:focus { border-color: var(--brand-orange); outline: none; }
         .step-progress { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 12px; color: var(--text-muted); font-weight: bold; text-transform: uppercase;}
 
-        /* Account Card Styles */
         .account-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 30px 20px; text-align: center; margin-top: 20px; }
         .account-icon { font-size: 50px; color: var(--brand-orange); margin-bottom: 15px; }
         .account-name { font-size: 22px; font-weight: bold; margin: 0 0 5px 0; text-transform: uppercase; }
@@ -127,7 +109,6 @@
         .logout-btn:hover { background-color: #ff6b6b; color: #fff; }
         .login-prompt-btn { background-color: var(--brand-orange); color: #000; border: none; padding: 12px 30px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 15px; text-transform: uppercase;}
 
-        /* Auth Modal */
         #auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; }
         .auth-box { background: var(--bg-card); padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; border: 1px solid var(--border-color); position: relative; }
         .close-auth { position: absolute; top: 15px; right: 20px; font-size: 20px; cursor: pointer; color: var(--text-muted); }
@@ -139,7 +120,6 @@
         #signup-form { display: none; }
         .auth-message { text-align: center; font-size: 14px; margin-bottom: 10px; color: #ff6b6b; }
 
-        /* Standard Nav Elements */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background-color: var(--bg-dark); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; cursor: pointer; gap: 5px; }
         .nav-item i { font-size: 20px; }
@@ -147,14 +127,12 @@
         .sub-header { display: flex; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); }
         .back-btn { font-size: 20px; cursor: pointer; margin-right: 15px; color: var(--brand-orange); }
         
-        /* Toast Notification & Loading */
         #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 4px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
         #loading-spinner { text-align: center; padding: 40px; color: var(--brand-orange); display: none; }
         
-        /* Order Status Styles */
         .order-card { background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
         .order-card:hover { border-color: var(--brand-orange); }
         .order-card-header { display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
@@ -162,7 +140,6 @@
         .order-date { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
         .order-details { display: none; margin-top: 25px; animation: fadeIn 0.3s; border-top: 1px dashed var(--border-color); padding-top: 15px; }
         
-        /* 4 Dots Timeline */
         .timeline { display: flex; align-items: center; justify-content: space-between; position: relative; margin-top: 15px; padding-bottom: 10px; }
         .timeline-bg-line { content: ''; position: absolute; top: 12px; left: 0; width: 100%; height: 2px; background: var(--border-color); z-index: 1; }
         .timeline-progress-line { position: absolute; top: 12px; left: 0; height: 2px; background: var(--brand-orange); z-index: 2; transition: width 0.5s ease; }
@@ -171,6 +148,21 @@
         .timeline-step.completed .dot { border-color: var(--brand-orange); background: var(--brand-orange); color: #000; }
         .timeline-label { font-size: 10px; color: var(--text-muted); margin-top: 10px; text-align: center; text-transform: uppercase; font-weight: bold; }
         .timeline-step.completed .timeline-label { color: var(--text-light); }
+
+        /* Payment Success Overlay CSS */
+        #payment-success-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 3000;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .checkmark-circle {
+            width: 90px; height: 90px; border-radius: 50%; background: #2ecc71;
+            display: flex; justify-content: center; align-items: center;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 30px rgba(46, 204, 113, 0.5);
+        }
+        .checkmark-circle i { color: white; font-size: 45px; }
+        @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -178,6 +170,14 @@
     <div id="animation-overlay">
         <video id="intro-video" muted autoplay playsinline><source src="animation.mp4" type="video/mp4"></video>
     </div>
+
+    <!-- Payment Success Animation & Audio -->
+    <div id="payment-success-overlay">
+        <div class="checkmark-circle"><i class="fas fa-check"></i></div>
+        <h2 style="color: #2ecc71; margin-top: 25px; text-transform: uppercase;">Payment Received</h2>
+        <p style="color: #aaa; margin-top: 5px;">Your order has been confirmed</p>
+    </div>
+    <audio id="success-sound" src="gpay.mp3" preload="auto"></audio>
 
     <div id="toast">Message</div>
 
@@ -223,7 +223,6 @@
                 <li onclick="openOrderStatus()">ORDER STATUS</li>
             </ul>
 
-            <!-- REQUIRED FOR GATEWAY APPROVAL -->
             <div class="sidebar-divider"></div>
             <ul class="sidebar-menu sidebar-menu-sub">
                 <li onclick="switchTab('contact')"><i class="fas fa-envelope"></i> Contact Us</li>
@@ -293,16 +292,13 @@
         <div id="checkout-bill-view" class="view-section">
             <div class="section-container">
                 <div class="sub-header"><i class="fas fa-arrow-left back-btn" onclick="switchTab('cart')"></i><h2 class="section-title" style="margin:0;">Order Summary</h2></div>
-                
                 <div id="bill-items-container"></div>
-                
                 <div class="bill-summary">
                     <div class="bill-row"><span>Items Total</span><span id="bill-item-total">₹0.00</span></div>
                     <div class="bill-row"><span>Delivery Charges</span><span style="color:#2ecc71;">₹0.00</span></div>
                     <div class="bill-row"><span>Platform Fee</span><span style="color:#2ecc71;">₹0.00</span></div>
                     <div class="bill-row bill-total"><span>To Pay</span><span id="bill-final-total">₹0.00</span></div>
                 </div>
-                
                 <button class="checkout-btn" onclick="goToCheckoutInfo()">PLACE ORDER</button>
             </div>
         </div>
@@ -351,11 +347,9 @@
                         <option value="West Bengal">West Bengal</option>
                     </select>
 
-                    <!-- SECURE PAYMENT SELECTION SECTION -->
                     <div style="margin-top: 20px; border: 1px solid var(--border-color); padding: 15px; border-radius: 4px; background: var(--bg-dark);">
                         <h3 style="margin-top: 0; font-size: 16px; color: var(--brand-orange); text-transform: uppercase;">Select Payment Method</h3>
                         
-                        <!-- ONLINE PAYMENT (RAZORPAY) -->
                         <div style="margin-bottom: 15px;">
                             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-light); font-size: 14px;">
                                 <input type="radio" name="payment_method" value="online" onchange="handlePaymentSelection()"> 
@@ -371,7 +365,6 @@
                         
                         <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
                         
-                        <!-- COD -->
                         <div>
                             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-light); font-size: 14px;">
                                 <input type="radio" name="payment_method" value="cod" onchange="handlePaymentSelection()"> 
@@ -385,15 +378,6 @@
 
                     <button class="checkout-btn" id="place-order-btn" disabled onclick="finalizeOrder(event)">SELECT PAYMENT METHOD</button>
                 </div>
-            </div>
-        </div>
-
-        <div id="search-view" class="view-section">
-            <div class="section-container">
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <input type="text" id="search-input" style="flex:1; padding:12px; border-radius:20px; border:1px solid #333; background:#1e1e1e; color:#fff;" placeholder="Search..." onkeyup="performSearch()">
-                </div>
-                <div class="grid-2" id="search-results-grid"></div>
             </div>
         </div>
 
@@ -414,10 +398,6 @@
             </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- LEGAL PAGES FOR GATEWAY APPROVAL -->
-        <!-- ========================================== -->
-        
         <div id="contact-view" class="view-section">
             <div class="section-container">
                 <div class="sub-header"><i class="fas fa-arrow-left back-btn" onclick="switchTab('home')"></i><h2 class="section-title" style="margin:0;">Contact Us</h2></div>
@@ -498,10 +478,7 @@
     </div>
 
     <script>
-        // ==========================================
-        // YOUR ORIGINAL SCRIPT URL RESTORED!
-        // ==========================================
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOaV_8ReAOp1GTFnzEkSnndliztJRMkhyU_ObRvFCc8Y467673RjaxHMdCHMwPyT9VpQ/exec"; 
+        const SCRIPT_URL = "/api/google-proxy"; 
         
         window.storeProducts = []; 
         let cart = [];
@@ -518,7 +495,7 @@
                 overlay.style.opacity = "0"; 
                 setTimeout(() => { overlay.style.display = "none"; mainContent.style.display = "block"; setTimeout(() => mainContent.style.opacity = "1", 50); }, 600); 
             };
-                       if(video) {
+            if(video) {
                 video.addEventListener("ended", showStore); 
                 video.addEventListener("error", showStore);
             } else {
@@ -553,7 +530,6 @@
                 }
             });
 
-            // Restored the fetch function!
             fetchStoreData();
         });
 
@@ -767,7 +743,7 @@
         }
 
         // =====================================================================
-        // NEW RAZORPAY INTEGRATION LOGIC
+        // UPDATED: CHECKOUT LOGIC WITH SUCCESS SOUND & DELAYED ALARM
         // =====================================================================
         async function finalizeOrder(event) {
             const state = document.getElementById('order-state').value;
@@ -787,13 +763,8 @@
 
             let orderTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             
-            let paymentNote = "";
-            if (selectedMethod === 'cod') {
-                orderTotal += 50; 
-                paymentNote = `[COD - Includes 50 charge]`;
-            } else if (selectedMethod === 'online') {
-                paymentNote = `[Paid via Razorpay]`;
-            }
+            let paymentNote = selectedMethod === 'cod' ? `[COD - Includes 50 charge]` : `[Paid via Razorpay]`;
+            if (selectedMethod === 'cod') orderTotal += 50; 
             orderTotal = parseFloat(orderTotal).toFixed(2);
 
             const itemsString = cart.map(item => `${item.quantity}x ${item.name} (Size: ${item.size})`).join(" | ") + " " + paymentNote;
@@ -809,10 +780,9 @@
             const originalText = btn.innerText;
             btn.disabled = true;
 
-            // Trigger MacroDroid (Optional)
             const MACRODROID_URL = "https://trigger.macrodroid.com/76dc1502-7795-4b78-9fec-b67ae2edf5dd/new_order";
-            fetch(MACRODROID_URL, { mode: 'no-cors' }).catch(err => console.log(err));
 
+            // --- PATH A: CASH ON DELIVERY ---
             if (selectedMethod === 'cod') {
                 btn.innerText = "PROCESSING...";
                 formData.append("action", "placeOrder");
@@ -821,18 +791,29 @@
                 .then(res => res.json())
                 .then(data => {
                     if(data.status === "Success") {
-                        alert("Order Placed Successfully!\n\nYour premium clothing is on the way.");
-                        cart = []; updateCartUI();
-                        document.querySelectorAll('.checkout-step input, .checkout-step select').forEach(input => input.value = '');
-                        document.querySelectorAll('input[name="payment_method"]').forEach(radio => radio.checked = false);
-                        document.getElementById('cod-section').style.display = 'none';
-                        switchTab('home');
+                        fetch(MACRODROID_URL, { mode: 'no-cors' }).catch(err => console.log(err));
+                        
+                        const audio = document.getElementById('success-sound');
+                        audio.play().catch(e => console.log("Audio play prevented"));
+                        
+                        const overlay = document.getElementById('payment-success-overlay');
+                        overlay.style.display = 'flex';
+                        
+                        setTimeout(() => {
+                            overlay.style.display = 'none';
+                            cart = []; updateCartUI();
+                            document.querySelectorAll('.checkout-step input, .checkout-step select').forEach(input => input.value = '');
+                            document.querySelectorAll('input[name="payment_method"]').forEach(radio => radio.checked = false);
+                            document.getElementById('cod-section').style.display = 'none';
+                            switchTab('home');
+                        }, 3000);
                     } else { alert("Database Error: " + (data.message || "Unknown error")); }
                 })
                 .catch(err => { alert("Network error. Please try again."); })
                 .finally(() => { btn.innerText = originalText; btn.disabled = false; });
             } 
-        else if (selectedMethod === 'online') {
+            // --- PATH B: RAZORPAY ONLINE ---
+            else if (selectedMethod === 'online') {
                 btn.innerText = "CONNECTING SECURE GATEWAY...";
                 formData.append("action", "createRazorpayOrder");
                 
@@ -844,11 +825,8 @@
                         btn.innerText = originalText; 
                         btn.disabled = false;
 
-                        // ==========================================
-                        // PASTE YOUR RAZORPAY KEY ID BELOW
-                        // ==========================================
                         var options = {
-                            "key": "rzp_live_TEbStzKGjAY7ca", // <--- CHANGE THIS!
+                            "key": "rzp_test_YOUR_KEY_ID_HERE", // <--- INSERT YOUR RAZORPAY KEY ID HERE
                             "amount": rzpData.amount, 
                             "currency": "INR",
                             "name": "Scorpion",
@@ -869,9 +847,22 @@
                                 .then(vResult => {
                                     document.getElementById('loading-spinner').style.display = 'none';
                                     if(vResult.status === "Paid") {
-                                        alert("Payment Successful! Order Confirmed.");
-                                        cart = []; updateCartUI(); switchTab('home');
-                                        document.querySelectorAll('.checkout-step input, .checkout-step select').forEach(input => input.value = '');
+                                        // 1. Trigger alarm only after successful payment
+                                        fetch(MACRODROID_URL, { mode: 'no-cors' }).catch(err => console.log(err));
+                                        
+                                        // 2. Play sound & show overlay
+                                        const audio = document.getElementById('success-sound');
+                                        audio.play().catch(e => console.log("Audio play prevented"));
+                                        
+                                        const overlay = document.getElementById('payment-success-overlay');
+                                        overlay.style.display = 'flex';
+                                        
+                                        // 3. Wait 3 seconds, clear cart, redirect home
+                                        setTimeout(() => {
+                                            overlay.style.display = 'none';
+                                            cart = []; updateCartUI(); switchTab('home');
+                                            document.querySelectorAll('.checkout-step input, .checkout-step select').forEach(input => input.value = '');
+                                        }, 3000);
                                     } else {
                                         alert("Payment verification failed! Contact support.");
                                     }
@@ -882,6 +873,10 @@
                         };
                         
                         var rzpCheckout = new Razorpay(options);
+                        rzpCheckout.on('payment.failed', function (response){
+                            alert("Payment Failed: " + response.error.description);
+                        });
+        var rzpCheckout = new Razorpay(options);
                         rzpCheckout.on('payment.failed', function (response){
                             alert("Payment Failed: " + response.error.description);
                         });
