@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scorpion | Premium Men's Clothing</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- RAZORPAY SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
     <style>
         :root { --bg-dark: #121212; --bg-card: #1e1e1e; --brand-orange: #f39c12; --text-light: #ffffff; --text-muted: #a0a0a0; --border-color: #333333; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg-dark); color: var(--text-light); overflow-x: hidden; }
@@ -219,7 +223,7 @@
                 <li onclick="openOrderStatus()">ORDER STATUS</li>
             </ul>
 
-            <!-- NEW: REQUIRED FOR GATEWAY APPROVAL -->
+            <!-- REQUIRED FOR GATEWAY APPROVAL -->
             <div class="sidebar-divider"></div>
             <ul class="sidebar-menu sidebar-menu-sub">
                 <li onclick="switchTab('contact')"><i class="fas fa-envelope"></i> Contact Us</li>
@@ -347,11 +351,11 @@
                         <option value="West Bengal">West Bengal</option>
                     </select>
 
-                    <!-- NEW: SECURE PAYMENT SELECTION SECTION -->
+                    <!-- SECURE PAYMENT SELECTION SECTION -->
                     <div style="margin-top: 20px; border: 1px solid var(--border-color); padding: 15px; border-radius: 4px; background: var(--bg-dark);">
                         <h3 style="margin-top: 0; font-size: 16px; color: var(--brand-orange); text-transform: uppercase;">Select Payment Method</h3>
                         
-                        <!-- ONLINE PAYMENT (CASHFREE) -->
+                        <!-- ONLINE PAYMENT (RAZORPAY) -->
                         <div style="margin-bottom: 15px;">
                             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-light); font-size: 14px;">
                                 <input type="radio" name="payment_method" value="online" onchange="handlePaymentSelection()"> 
@@ -360,7 +364,7 @@
                             
                             <div id="online-section" style="display: none; margin-left: 25px; margin-top: 10px;">
                                 <p style="font-size: 12px; color: #2ecc71; margin-bottom: 10px;">
-                                    <i class="fas fa-lock"></i> Secured by Cashfree Payments. You will be redirected to complete your purchase securely.
+                                    <i class="fas fa-lock"></i> Secured by Razorpay. Includes UPI, Cards, and Netbanking.
                                 </p>
                             </div>
                         </div>
@@ -483,18 +487,6 @@
             </div>
         </div>
 
-                    <div id="shipping-view" class="view-section">
-            <div class="section-container">
-                <div class="sub-header"><i class="fas fa-arrow-left back-btn" onclick="switchTab('home')"></i><h2 class="section-title" style="margin:0;">Shipping Policy</h2></div>
-                <div class="policy-container">
-                    <h3>Delivery & Shipping</h3>
-                    <p>We process all orders within 1-2 business days.</p>
-                    <h4>Delivery Timeline</h4><p>Standard delivery takes 3 to 7 business days depending on your location in India.</p>
-                    <h4>Shipping Costs</h4><p>Shipping costs (if applicable) will be calculated and displayed at checkout.</p>
-                </div>
-            </div>
-        </div>
-
         <div class="bottom-nav" id="main-bottom-nav">
             <div class="nav-item active" id="nav-home" onclick="switchTab('home')"><i class="fas fa-home"></i><span>HOME</span></div>
             <div class="nav-item" id="nav-search" onclick="switchTab('search')"><i class="fas fa-search"></i><span>SEARCH</span></div>
@@ -526,7 +518,7 @@
                 overlay.style.opacity = "0"; 
                 setTimeout(() => { overlay.style.display = "none"; mainContent.style.display = "block"; setTimeout(() => mainContent.style.opacity = "1", 50); }, 600); 
             };
-            if(video) {
+                       if(video) {
                 video.addEventListener("ended", showStore); 
                 video.addEventListener("error", showStore);
             } else {
@@ -756,7 +748,6 @@
             document.getElementById('step-tracker').innerText = `Step ${stepNumber} of 4`;
         }
 
-        // --- NEW SECURE PAYMENT UI ---
         function handlePaymentSelection() {
             const selectedMethodEl = document.querySelector('input[name="payment_method"]:checked');
             if(!selectedMethodEl) return;
@@ -775,7 +766,9 @@
             placeOrderBtn.disabled = false; 
         }
 
-        // --- NEW ORDER FINALIZE LOGIC ---
+        // =====================================================================
+        // NEW RAZORPAY INTEGRATION LOGIC
+        // =====================================================================
         async function finalizeOrder(event) {
             const state = document.getElementById('order-state').value;
             if (state === '') return showToast("Please select your State");
@@ -799,14 +792,13 @@
                 orderTotal += 50; 
                 paymentNote = `[COD - Includes 50 charge]`;
             } else if (selectedMethod === 'online') {
-                paymentNote = `[Online Payment via Cashfree]`;
+                paymentNote = `[Paid via Razorpay]`;
             }
             orderTotal = parseFloat(orderTotal).toFixed(2);
 
             const itemsString = cart.map(item => `${item.quantity}x ${item.name} (Size: ${item.size})`).join(" | ") + " " + paymentNote;
 
             const formData = new FormData();
-            formData.append("action", "placeOrder");
             formData.append("name", name);
             formData.append("mobile", mobile);
             formData.append("address", fullAddress);
@@ -823,6 +815,8 @@
 
             if (selectedMethod === 'cod') {
                 btn.innerText = "PROCESSING...";
+                formData.append("action", "placeOrder");
+                
                 fetch(SCRIPT_URL, { method: "POST", body: new URLSearchParams(formData) })
                 .then(res => res.json())
                 .then(data => {
@@ -838,25 +832,72 @@
                 .catch(err => { alert("Network error. Please try again."); })
                 .finally(() => { btn.innerText = originalText; btn.disabled = false; });
             } 
-            else if (selectedMethod === 'online') {
+        else if (selectedMethod === 'online') {
                 btn.innerText = "CONNECTING SECURE GATEWAY...";
+                formData.append("action", "createRazorpayOrder");
                 
-           // When you are ready for Cashfree API, you will swap "placeOrder" with your new Cashfree Script function here!
-                // For now, it places the order as pending so you can redirect them.
-                
-                fetch(SCRIPT_URL, { method: "POST", body: new URLSearchParams(formData) })
-                .then(res => res.json())
-                .then(data => {
-                    if(data.status === "Success") {
-                        alert("NOTE: Replace this alert with your Cashfree Link Redirect once you have the API Keys!");
-                        cart = []; updateCartUI();
-                        switchTab('home');
-                    } else { showToast("Gateway Error."); }
-                })
-                .catch(err => { showToast("Network Error."); })
-                .finally(() => { btn.innerText = originalText; btn.disabled = false; });
+                try {
+                    const res = await fetch(SCRIPT_URL, { method: "POST", body: new URLSearchParams(formData) });
+                    const rzpData = await res.json();
+                    
+                    if (rzpData.status === "Success") {
+                        btn.innerText = originalText; 
+                        btn.disabled = false;
+
+                        // ==========================================
+                        // PASTE YOUR RAZORPAY KEY ID BELOW
+                        // ==========================================
+                        var options = {
+                            "key": "rzp_live_TEbStzKGjAY7ca", // <--- CHANGE THIS!
+                            "amount": rzpData.amount, 
+                            "currency": "INR",
+                            "name": "Scorpion",
+                            "description": "Premium Men's Clothing",
+                            "order_id": rzpData.order_id,
+                            "handler": function (response) {
+                                document.getElementById('loading-spinner').innerHTML = "<p>Verifying Payment...</p>";
+                                document.getElementById('loading-spinner').style.display = 'block';
+
+                                const verifyData = new FormData();
+                                verifyData.append("action", "verifyRazorpayPayment");
+                                verifyData.append("rzp_order_id", response.razorpay_order_id);
+                                verifyData.append("rzp_payment_id", response.razorpay_payment_id);
+                                verifyData.append("rzp_signature", response.razorpay_signature);
+                                
+                                fetch(SCRIPT_URL, { method: "POST", body: new URLSearchParams(verifyData) })
+                                .then(vRes => vRes.json())
+                                .then(vResult => {
+                                    document.getElementById('loading-spinner').style.display = 'none';
+                                    if(vResult.status === "Paid") {
+                                        alert("Payment Successful! Order Confirmed.");
+                                        cart = []; updateCartUI(); switchTab('home');
+                                        document.querySelectorAll('.checkout-step input, .checkout-step select').forEach(input => input.value = '');
+                                    } else {
+                                        alert("Payment verification failed! Contact support.");
+                                    }
+                                });
+                            },
+                            "prefill": { "name": name, "contact": mobile },
+                            "theme": { "color": "#f39c12" }
+                        };
+                        
+                        var rzpCheckout = new Razorpay(options);
+                        rzpCheckout.on('payment.failed', function (response){
+                            alert("Payment Failed: " + response.error.description);
+                        });
+                        rzpCheckout.open();
+                        
+                    } else {
+                        alert("Gateway Error: " + (rzpData.msg || "Unable to create order"));
+                        btn.innerText = originalText; btn.disabled = false;
+                    }
+                } catch (err) {
+                    alert("Network Error.");
+                    btn.innerText = originalText; btn.disabled = false;
+                }
             }
         }
+        // =====================================================================
 
         function openAuth(type) { document.getElementById("auth-modal").style.display = "flex"; switchAuth(type); }
         function closeAuth() { document.getElementById("auth-modal").style.display = "none"; }
