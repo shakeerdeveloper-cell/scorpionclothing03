@@ -203,8 +203,7 @@
     </div>
 
     <div id="main-content">
-        
-        <div id="sidebar-overlay"></div>
+                   <div id="sidebar-overlay"></div>
         <nav id="sidebar">
             <div class="sidebar-header">
                 <h2 id="sidebar-greeting">WELCOME TO<br>SCORPION</h2>
@@ -454,7 +453,6 @@
                 </div>
             </div>
         </div>
-
         <div id="shipping-view" class="view-section">
             <div class="section-container">
                 <div class="sub-header"><i class="fas fa-arrow-left back-btn" onclick="switchTab('home')"></i><h2 class="section-title" style="margin:0;">Shipping Policy</h2></div>
@@ -782,7 +780,7 @@
 
             const MACRODROID_URL = "https://trigger.macrodroid.com/76dc1502-7795-4b78-9fec-b67ae2edf5dd/new_order";
 
-            // --- PATH A: CASH ON DELIVERY ---
+        // --- PATH A: CASH ON DELIVERY ---
             if (selectedMethod === 'cod') {
                 btn.innerText = "PROCESSING...";
                 formData.append("action", "placeOrder");
@@ -973,7 +971,63 @@
             orders.reverse().forEach((order, index) => {
                 const statusLvl = parseInt(order.statusLevel) || 1; 
                 const progressWidth = ((statusLvl - 1) / 3) * 100;
-                container.innerHTML += `<div class="order-card" onclick="toggleOrderDetails('order-details-${index}')"><div class="order-card-header"><div><div class="order-id">Order #${order.orderId || 'Pending'}</div><div class="order-date">${order.date || ''}</div></div><div style="font-weight:bold; color:var(--text-light);">₹${order.total || '0.00'}</div></div><div id="order-details-${index}" class="order-details"><p style="font-size:12px; color:var(--text-muted); margin-bottom: 20px;"><strong>Items:</strong> ${order.items || 'N/A'}</p><div class="timeline"><div class="timeline-bg-line"></div><div class="timeline-progress-line" style="width: ${progressWidth}%;"></div><div class="timeline-step ${statusLvl >= 1 ? 'completed' : ''}"><div class="dot"><i class="fas fa-check"></i></div><div class="timeline-label">In-Transit</div></div><div class="timeline-step ${statusLvl >= 2 ? 'completed' : ''}"><div class="dot"><i class="fas fa-check"></i></div><div class="timeline-label">Reached<br>Destination</div></div><div class="timeline-step ${statusLvl >= 3 ? 'completed' : ''}"><div class="dot"><i class="fas fa-check"></i></div><div class="timeline-label">Out for<br>Delivery</div></div><div class="timeline-step ${statusLvl >= 4 ? 'completed' : ''}"><div class="dot"><i class="fas fa-check"></i></div><div class="timeline-label">Delivered</div></div></div></div></div>`;
+                
+                // --- NEW LOGIC: Extract the first item's name and match it to a product image ---
+                let firstProductName = "Premium Item";
+                let firstProductImage = "https://via.placeholder.com/80x100?text=Scorpion"; 
+                
+                const match = (order.items || "").match(/\d+x\s+(.+?)\s+\(Size:/);
+                if (match && match[1]) {
+                    firstProductName = match[1].trim();
+                    const product = window.storeProducts.find(p => p.Name && p.Name.toLowerCase() === firstProductName.toLowerCase());
+                    if (product && product.Image) {
+                        firstProductImage = product.Image;
+                    }
+                }
+
+                // Check if they bought more than one item
+                const itemsCount = (order.items || "").split("|").length;
+                let extraItemsBadge = itemsCount > 1 ? `<span style="font-size:12px; color:var(--text-muted); font-weight:normal; display:block; margin-top:3px;">+ ${itemsCount - 1} other item(s)</span>` : "";
+
+                container.innerHTML += `
+                <div class="order-card" onclick="toggleOrderDetails('order-details-${index}')">
+                    <div class="order-card-header" style="align-items: flex-start; gap: 15px;">
+                        
+                        <img src="${firstProductImage}" style="width: 60px; height: 80px; object-fit: cover; border-radius: 4px;" alt="Product">
+                        
+                        <div style="flex: 1;">
+                            <div style="color: var(--text-light); font-weight: bold; font-size: 14px; text-transform: uppercase;">${firstProductName}</div>
+                            ${extraItemsBadge}
+                            <div class="order-date" style="margin-top: 5px;">${order.date || ''}</div>
+                        </div>
+                        
+                        <div style="font-weight:bold; color:var(--brand-orange);">₹${order.total || '0.00'}</div>
+                    </div>
+                    
+                    <div id="order-details-${index}" class="order-details">
+                        <p style="font-size:12px; color:var(--text-muted); margin-bottom: 20px;"><strong>Order Details:</strong> ${order.items || 'N/A'}</p>
+                        <div class="timeline">
+                            <div class="timeline-bg-line"></div>
+                            <div class="timeline-progress-line" style="width: ${progressWidth}%;"></div>
+                            <div class="timeline-step ${statusLvl >= 1 ? 'completed' : ''}">
+                                <div class="dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-label">In-Transit</div>
+                            </div>
+                            <div class="timeline-step ${statusLvl >= 2 ? 'completed' : ''}">
+                                <div class="dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-label">Reached<br>Destination</div>
+                            </div>
+                            <div class="timeline-step ${statusLvl >= 3 ? 'completed' : ''}">
+                                <div class="dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-label">Out for<br>Delivery</div>
+                            </div>
+                            <div class="timeline-step ${statusLvl >= 4 ? 'completed' : ''}">
+                                <div class="dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-label">Delivered</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
             });
         }
 
